@@ -25,11 +25,14 @@ while 1:
 
         packets = ""
 
-        for number in range(packets_counter, packets_counter + 5):
+        timeouts = {}
 
+        for number in range(packets_counter, packets_counter + 5):
             expected_acks.append("ack:{}".format(number % 5))
 
             packets = packets + 'hello:{}'.format(number % 5)
+
+            timeouts["ack:{}".format(number % 5)] = time.time()
 
             if number < packets_counter + 4:
                 packets = packets + ' | '
@@ -38,21 +41,22 @@ while 1:
 
         print("packets sent: " + packets)
 
-
         buffer = clientsocket.recv(1024).decode('utf8')
 
         print("acks received: " + buffer)
 
-        acks = buffer.split(' ')
+        acks = buffer.split(' | ')
 
         acks.remove('')
 
         acks = list(dict.fromkeys(acks))
 
         for ack in range(len(acks)):
-            if acks[ack] in expected_acks:
+            if acks[ack] in expected_acks and time.time() - timeouts[acks[ack]] < 10:
                 packets_counter += 1
-                print(acks[ack])
+                print("accepted ack: " + acks[ack])
+            else:
+                break
 
     packets_counter = 0
 
