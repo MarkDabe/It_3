@@ -1,0 +1,11 @@
+stop and wait
+
+sender sends 1 packets at a time and waits for ack. receiver acks the received packet.
+
+sequence number starts at 0 till 9
+
+IMPORTANT: data transfer is all done in one serversocket.accept() session (only one socket is opened used throughout the session)
+
+to use:
+python sender.py
+python receiver.py
